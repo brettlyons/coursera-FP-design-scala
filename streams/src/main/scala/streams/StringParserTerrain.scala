@@ -54,8 +54,17 @@ trait StringParserTerrain extends GameDef {
    */
   // TODO: setup ad-hoc println tests, use Vector methods such as apply and contains, index of, etc.  -- find good ones.
   def terrainFunction(levelVector: Vector[Vector[Char]]): Pos => Boolean =
-    (x:Int, y:Int) => {
-      levelVector[y][x] == 'o' || levelVector[y][x] == 'S' || levelVector[y][x] == 'T'
+    thePos => {
+      if (levelVector.isDefinedAt(thePos.x)) {
+        if(levelVector.apply(thePos.x).isDefinedAt(thePos.y)) {
+          val posChar = levelVector.apply(thePos.x).apply(thePos.y);
+          posChar == 'S' || posChar == 'T' || posChar == 'o';
+        }
+        else
+          false
+      }
+      else 
+        false
     }
 
   /**
@@ -66,7 +75,16 @@ trait StringParserTerrain extends GameDef {
    * Hint: you can use the functions `indexWhere` and / or `indexOf` of the
    * `Vector` class
    */
-  def findChar(c: Char, levelVector: Vector[Vector[Char]]): Pos = ???
+  def findChar(c: Char, levelVector: Vector[Vector[Char]]): Pos = {
+    val tmpX = levelVector.indexWhere(innerVector => innerVector.indexOf(c) > -1);
+    val tmpY = levelVector.apply(tmpX).indexOf(c);
+    // println(Pos(tmpX, tmpY));
+    // what happens when the indexWhere predicate returns false?
+    // ??? 
+    Pos(tmpX, tmpY);
+  }
+  
+
 
   private lazy val vector: Vector[Vector[Char]] =
     Vector(level.split("\n").map(str => Vector(str: _*)): _*)
