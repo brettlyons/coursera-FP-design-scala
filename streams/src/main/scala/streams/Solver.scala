@@ -29,8 +29,7 @@ trait Solver extends GameDef {
    * that are inside the terrain.
    */
   def neighborsWithHistory(b: Block, history: List[Move]): Stream[(Block, List[Move])] = {
-    val retList = for (pair <- b.legalNeighbors) yield { (pair._1, pair._2 :: history) }
-    retList.toStream;
+    b.legalNeighbors.map(pair => (pair._1, pair._2 :: history)).toStream;
   }
 
 
