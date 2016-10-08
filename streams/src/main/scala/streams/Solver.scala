@@ -7,6 +7,7 @@ import common._
  */
 trait Solver extends GameDef {
 
+
   /**
    * Returns `true` if the block `b` is at the final position
    */
@@ -27,13 +28,18 @@ trait Solver extends GameDef {
    * It should only return valid neighbors, i.e. block positions
    * that are inside the terrain.
    */
-  def neighborsWithHistory(b: Block, history: List[Move]): Stream[(Block, List[Move])] = ???
+  def neighborsWithHistory(b: Block, history: List[Move]): Stream[(Block, List[Move])] = {
+    val retList = for (pair <- b.legalNeighbors) yield { (pair._1, pair._2 :: history) }
+    retList.toStream;
+  }
+
 
   /**
    * This function returns the list of neighbors without the block
    * positions that have already been explored. We will use it to
    * make sure that we don't explore circular paths.
    */
+
   def newNeighborsOnly(neighbors: Stream[(Block, List[Move])],
                        explored: Set[Block]): Stream[(Block, List[Move])] = ???
 
