@@ -11,7 +11,7 @@ trait Solver extends GameDef {
   /**
    * Returns `true` if the block `b` is at the final position
    */
-  def done(b: Block): Boolean = b.isStanding && b.b1.x == goal.x && b.b1.y == goal.y
+  def done(b: Block): Boolean = b.isStanding && b.b2.x == goal.x && b.b2.y == goal.y
   /**
    * This function takes two arguments: the current block `b` and
    * a list of moves `history` that was required to reach the
@@ -68,18 +68,32 @@ trait Solver extends GameDef {
    */
 
   def from(initial: Stream[(Block, List[Move])],
-           explored: Set[Block]): Stream[(Block, List[Move])] = ???
+           explored: Set[Block]): Stream[(Block, List[Move])] = {
+    val theBlock = initial.head._1;
+    val theMoveList = initial.head._2;
+    println("Initial: ");
+    println(initial);
+    (theBlock, theMoveList) #:: from(newNeighborsOnly(neighborsWithHistory(theBlock, theMoveList), explored), explored union Set(initial.head._1))
+  }
+  // filterNot (blockMove => explored.contains(blockMove._1))
+  // might need this later
+
+  // so this will call newNeighborsOnly
+  // and filter out explored
+  // in an infinite way --
+  // except that since it's a Stream, it will be lazy
+  // and only realize what is requested
 
   /**
    * The stream of all paths that begin at the starting block.
    */
-  lazy val pathsFromStart: Stream[(Block, List[Move])] = ???
+  lazy val pathsFromStart: Stream[(Block, List[Move])] = from(neighborsWithHistory(startBlock, Nil), Set());
 
   /**
    * Returns a stream of all possible pairs of the goal block along
    * with the history how it was reached.
    */
-  lazy val pathsToGoal: Stream[(Block, List[Move])] = ???
+  lazy val pathsToGoal: Stream[(Block, List[Move])] = pathsFromStart.filter(moveBlocks => done(moveBlocks._1))
 
   /**
    * The (or one of the) shortest sequence(s) of moves to reach the
@@ -89,5 +103,9 @@ trait Solver extends GameDef {
    * the first move that the player should perform from the starting
    * position.
    */
-  lazy val solution: List[Move] = ???
+  lazy val solution: List[Move] = {
+    println("solution");
+    println(pathsToGoal take 10);
+    pathsToGoal.head._2 take 1
+  }
 }
